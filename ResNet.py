@@ -8,6 +8,7 @@ Created on Wed Jan 17 21:13:05 2024
 import lightning as L
 import torch.nn as nn
 import torch.nn.functional as F
+import torch
 
 class ResNet9Lighting(L.LightningModule):
   ## computationnal code
@@ -30,7 +31,7 @@ class ResNet9Lighting(L.LightningModule):
         self.max_lr = max_lr
         self.weight_decay = weight_decay
     
-    def conv_block(in_channels, out_channels, pool=False):
+    def conv_block(self, in_channels, out_channels, pool=False):
        layers = [
            nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
            nn.BatchNorm2d(out_channels),
@@ -40,7 +41,7 @@ class ResNet9Lighting(L.LightningModule):
            layers.append(nn.MaxPool2d(2))
        return nn.Sequential(*layers)
     
-    def accuracy(outputs, labels):
+    def accuracy(self, outputs, labels):
         max = torch.max(outputs)
         sum = torch.sum(max == labels)
         acc = sum.item() / len(labels)

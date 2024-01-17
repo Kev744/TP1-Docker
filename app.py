@@ -5,7 +5,7 @@ from PIL import Image
 from ResNet import ResNet9Lighting
 
 model = ResNet9Lighting(3,6, 0.01, 0.01)
-model.load_state_dict(torch.load('/model.pth'))
+model.load_state_dict(torch.load('model.pth'))
 
 app = Flask(__name__)
 
