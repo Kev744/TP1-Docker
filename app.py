@@ -45,7 +45,7 @@ def upload_files():
            return 'No selected file'
        if file:
            prediction = predict_image(file)
-	         return jsonify(prediction)
+           return jsonify(prediction)
    return '''
    <h1>Upload new File</h1>
    <form method="post" enctype="multipart/form-data">
