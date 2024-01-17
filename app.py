@@ -1,9 +1,14 @@
 import torch
 from torchvision import transforms
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from PIL import Image
+from ResNet import ResNet9Lighting
 
-model = torch.load('model.pth')
+model = ResNet9Lighting(3,6, 0.01, 0.01)
+model.load_state_dict(torch.load('/model.pth'))
+
+app = Flask(__name__)
+
 
 # Define the transformation to be applied to the input image
 labels = ['buildings', 'forest', 'glacier', 'mountain', 'sea', 'street']
@@ -45,7 +50,7 @@ def upload_files():
            return 'No selected file'
        if file:
            prediction = predict_image(file)
-           return jsonify(prediction)
+           return prediction
    return '''
    <h1>Upload new File</h1>
    <form method="post" enctype="multipart/form-data">
@@ -53,3 +58,7 @@ def upload_files():
      <input type="submit">
    </form>
    '''
+
+if __name__ == '__main__':
+    # Assuming your Flask app is named 'app'
+    app.run(port=5000)
