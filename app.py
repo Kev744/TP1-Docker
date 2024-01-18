@@ -1,8 +1,10 @@
 import torch
 from torchvision import transforms
-from flask import Flask, request
+from flask import Flask, request, redirect, url_for, render_template
 from PIL import Image
 from ResNet import ResNet9Lighting
+import io
+import base64
 
 model = ResNet9Lighting(3,6, 0.01, 0.01)
 model.load_state_dict(torch.load('model.pth'))
@@ -40,6 +42,7 @@ def predict_image(image_path):
     # For simplicity, let's just return the predicted index in this example
     return {'prediction': labels[int(predicted_index)]}
 
+
 @app.route('/', methods=['GET', 'POST'])
 def upload_files():
    if request.method == 'POST':
@@ -50,15 +53,25 @@ def upload_files():
            return 'No selected file'
        if file:
            prediction = predict_image(file)
+           image = Image.open(file.stream)
+           buffered = io.BytesIO()
+           image.save(buffered, format="JPEG")
+           img_str = base64.b64encode(buffered.getvalue()).decode()
+           return render_template('show_image_prediction.html', img_str=img_str, prediction=prediction)
+   return render_template('show_image_prediction.html')
+
+@app.route('/predict', methods=['GET', 'POST'])
+def make_prediction():
+   if request.method == 'POST':
+       if 'file' not in request.files:
+           return 'No file part'
+       file = request.files['file']
+       if file.filename == '':
+           return 'No selected file'
+       if file:
+           prediction = predict_image(file)
            return prediction
-   return '''
-   <h1>Upload new File</h1>
-   <form method="post" enctype="multipart/form-data">
-     <input type="file" name="file">
-     <input type="submit">
-   </form>
-   '''
 
 if __name__ == '__main__':
     # Assuming your Flask app is named 'app'
-    app.run(port=5000)
+    app.run(host = '0.0.0.0', port=5000)
