@@ -1,6 +1,6 @@
 import torch
 from torchvision import transforms
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, render_template
 from PIL import Image
 from ResNet import ResNet9Lighting
 import io
